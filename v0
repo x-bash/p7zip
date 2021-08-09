@@ -1,0 +1,71 @@
+# shellcheck shell=sh disable=SC3043
+
+# author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
+# maintainer:   Li Junhao
+
+xrc os/v0
+
+if ! command -v 7z; then
+
+xrc log init p7zr
+
+_p7zr_init(){
+    local target="$HOME/.x-cmd/.bin/7zr"
+    mkdir -p "$target"
+
+    local arch="$(os arch)"
+    local osname="$(os name)"
+
+    p7zr_log debug "detect osname/arch: $osname/$aarch"
+
+    if [ "$osname" = "win" ]; then
+        p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7za.exe"
+        if CACHE="$target/7za.exe" xrc_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7za.exe"; then   
+            chmod +x "$target/7za.exe" && eval "
+                p7zr() { $target/7za.exe \${1:+\"\$@\"}; }
+            "
+        else
+            echo "Failed!" >&2
+            return 1
+        fi
+    else
+        case "$osname" in
+            linux|darwin)
+                p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
+                if  CACHE="$target/7zr" xrc_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
+                then
+                    chmod +x "$target/7zr" && eval "
+                        p7zr() { $target/7zr \${1:+\"\$@\"}; }
+                    "
+                else
+                    echo "Failed!" >&2
+                    return 1
+                fi
+            ;;
+            *)  echo "Unsupported!" >&2; return 1 ;;
+        esac
+    fi
+}
+
+_p7zr_init || return 1 >&2
+
+fi
+
+# shellcheck disable=SC2139
+# zipx() {
+#     local op="${1}"
+#     shift
+#     case "$op" in
+#         *.zip|*.7z)
+#             _zip_bin x "$op"
+#             ;;
+#         *.tar)
+#             local dest=${op%.tar}
+#             _zip_bin x "$op" "-o$dest"
+#             ;;
+#         *.tar.gz) ;;
+#         *.tar.bz2) ;;
+
+#     esac
+
+# }
