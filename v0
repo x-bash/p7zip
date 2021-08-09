@@ -9,7 +9,7 @@ if ! command -v 7z; then
 
 xrc log init p7zr
 
-_p7zr_init(){
+_p7zr_which(){
     local target="$HOME/.x-cmd/.bin/7zr"
     mkdir -p "$target"
 
@@ -21,11 +21,9 @@ _p7zr_init(){
     if [ "$osname" = "win" ]; then
         p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7za.exe"
         if CACHE="$target/7za.exe" xrc_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7za.exe"; then   
-            chmod +x "$target/7za.exe" && eval "
-                p7zr() { $target/7za.exe \${1:+\"\$@\"}; }
-            "
+            chmod +x "$target/7za.exe" && printf "%s" "$target/7za.exe"
         else
-            echo "Failed!" >&2
+            p7zr_log error "Fail to download."
             return 1
         fi
     else
@@ -34,20 +32,33 @@ _p7zr_init(){
                 p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
                 if  CACHE="$target/7zr" xrc_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
                 then
-                    chmod +x "$target/7zr" && eval "
-                        p7zr() { $target/7zr \${1:+\"\$@\"}; }
-                    "
+                    chmod +x "$target/7zr" && printf "%s" "$target/7zr"
                 else
-                    echo "Failed!" >&2
+                    p7zr_log error "Fail to download."
                     return 1
                 fi
             ;;
-            *)  echo "Unsupported!" >&2; return 1 ;;
+            *)  p7zr_log error "Unsupported [arch=$arch] [os=$osname]!" >&2; return 1 ;;
         esac
     fi
 }
 
-_p7zr_init || return 1 >&2
+p7zr(){
+    local path=$(_p7zr_which)
+    eval "
+        p7zr(){
+            $path \${1:+\"\$@\"}
+        }
+    "
+    p7zr ${1:+"$@"}
+}
+
+eval "$(
+    if path="$(_p7zr_which)"; then
+        printf "%s" "p7zr(){ $path \${1:+\"\$@\"} }"
+    fi
+)"
+
 
 fi
 
