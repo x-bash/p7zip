@@ -3,20 +3,25 @@
 # author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
 # maintainer:   Li Junhao
 
-xrc os/v0
+if command -v 7z 1>/dev/null 2>&1; then
+    _p7zr_which(){
+        command -v 7z
+    }
 
-if ! command -v 7z; then
+else
 
 xrc log init p7zr
-
 _p7zr_which(){
     local target="$HOME/.x-cmd/.bin/7zr"
     mkdir -p "$target"
 
-    local arch="$(os arch)"
-    local osname="$(os name)"
+    xrc os/v0       # In need
+    local arch
+    arch="$(os arch)"
+    local osname
+    osname="$(os name)"
 
-    p7zr_log debug "detect osname/arch: $osname/$aarch"
+    p7zr_log debug "detect osname/arch: $osname/$arch"
 
     if [ "$osname" = "win" ]; then
         p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7za.exe"
@@ -44,7 +49,8 @@ _p7zr_which(){
 }
 
 p7zr(){
-    local path=$(_p7zr_which)
+    local path
+    path=$(_p7zr_which)
     eval "
         p7zr(){
             $path \${1:+\"\$@\"}
@@ -53,30 +59,4 @@ p7zr(){
     p7zr ${1:+"$@"}
 }
 
-eval "$(
-    if path="$(_p7zr_which)"; then
-        printf "%s" "p7zr(){ $path \${1:+\"\$@\"} }"
-    fi
-)"
-
-
 fi
-
-# shellcheck disable=SC2139
-# zipx() {
-#     local op="${1}"
-#     shift
-#     case "$op" in
-#         *.zip|*.7z)
-#             _zip_bin x "$op"
-#             ;;
-#         *.tar)
-#             local dest=${op%.tar}
-#             _zip_bin x "$op" "-o$dest"
-#             ;;
-#         *.tar.gz) ;;
-#         *.tar.bz2) ;;
-
-#     esac
-
-# }
