@@ -48,6 +48,8 @@ _p7zr_which(){
     fi
 }
 
+fi
+
 p7zr(){
     local path
     path=$(_p7zr_which)
@@ -58,5 +60,3 @@ p7zr(){
     "
     p7zr ${1:+"$@"}
 }
-
-fi
