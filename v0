@@ -25,7 +25,7 @@ _p7zr_which(){
 
     if [ "$osname" = "win" ]; then
         p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7za.exe"
-        if CACHE="$target/7za.exe" xrc_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7za.exe"; then   
+        if CACHE="$target/7za.exe" ___xcmd_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7za.exe"; then   
             chmod +x "$target/7za.exe" && printf "%s" "$target/7za.exe"
         else
             p7zr_log error "Fail to download."
@@ -35,7 +35,7 @@ _p7zr_which(){
         case "$osname" in
             linux|darwin)
                 p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
-                if  CACHE="$target/7zr" xrc_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
+                if  CACHE="$target/7zr" ___xcmd_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
                 then
                     chmod +x "$target/7zr" && printf "%s" "$target/7zr"
                 else
