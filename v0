@@ -4,15 +4,15 @@
 # maintainer:   Li Junhao
 
 if command -v 7z 1>/dev/null 2>&1; then
-    _p7zr_which(){
+    _7zd_which(){
         command -v 7z
     }
 
 else
 
 xrc log init p7zr
-_p7zr_which(){
-    local target="$HOME/.x-cmd/.bin/7zr"
+_7zd_which(){
+    local target="$HOME/.x-cmd/.bin/7zd"
     mkdir -p "$target"
 
     xrc os/v0       # In need
@@ -34,10 +34,10 @@ _p7zr_which(){
     else
         case "$osname" in
             linux|darwin)
-                p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
-                if  CACHE="$target/7zr" ___xcmd_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
+                p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7zd.$osname.$arch"
+                if  CACHE="$target/7zd" ___xcmd_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7zd.$osname.$arch"
                 then
-                    chmod +x "$target/7zr" && printf "%s" "$target/7zr"
+                    chmod +x "$target/7zd" && printf "%s" "$target/7zd"
                 else
                     p7zr_log error "Fail to download."
                     return 1
@@ -52,7 +52,7 @@ fi
 
 p7zr(){
     local path
-    path=$(_p7zr_which)
+    path=$(_7zd_which)
     eval "
         p7zr(){
             $path \${1:+\"\$@\"}
