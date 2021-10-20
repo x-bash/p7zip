@@ -3,12 +3,12 @@
 # author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
 # maintainer:   Li Junhao
 
-# if command -v 7z 1>/dev/null 2>&1; then
-#     _7zd_which(){
-#         command -v 7z
-#     }
+if command -v 7z 1>/dev/null 2>&1; then
+    _7zd_which(){
+        command -v 7z
+    }
 
-# else
+else
 
 x log init p7zr
 _7zd_which(){
@@ -54,7 +54,7 @@ _7zd_which(){
     fi
 }
 
-# fi
+fi
 
 p7zr(){
     local path
