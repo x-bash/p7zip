@@ -10,7 +10,7 @@ if command -v 7z 1>/dev/null 2>&1; then
 
 else
 
-xrc log init p7zr
+x log init p7zr
 _7zd_which(){
     local target="$HOME/.x-cmd/.bin/7zd"
     mkdir -p "$target"
