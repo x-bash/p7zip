@@ -10,7 +10,7 @@ if command -v 7z 1>/dev/null 2>&1; then
 
 else
 
-x log init p7zr
+x log init p7zd
 _7zd_which(){
     local target="$HOME/.x-cmd/.bin/7zd"
     mkdir -p "$target"
@@ -46,13 +46,13 @@ _7zd_which(){
 
 fi
 
-p7zr(){
+p7zd(){
     local p7z_path
     p7z_path="$(_7zd_which)"
     eval "
-        p7zr(){
+        p7zd(){
             $p7z_path \${1:+\"\$@\"}
         }
     "
-    p7zr ${1:+"$@"}
+    p7zd ${1:+"$@"}
 }
