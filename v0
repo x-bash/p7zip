@@ -4,59 +4,55 @@
 # maintainer:   Li Junhao
 
 if command -v 7z 1>/dev/null 2>&1; then
-    _p7zr_which(){
+    _7zd_which(){
         command -v 7z
     }
 
 else
 
-xrc log init p7zr
-_p7zr_which(){
-    local target="$HOME/.x-cmd/.bin/7zr"
+x log init p7zd
+_7zd_which(){
+    local target="$HOME/.x-cmd/.bin/7zd"
     mkdir -p "$target"
-
-    xrc os/v0       # In need
+    xrc os
     local arch
     arch="$(os arch)"
     local osname
     osname="$(os name)"
+    local release
+    release="$(uname -r)"
 
-    p7zr_log debug "detect osname/arch: $osname/$arch"
-
-    if [ "$osname" = "win" ]; then
-        p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7za.exe"
-        if CACHE="$target/7za.exe" xrc_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7za.exe"; then   
-            chmod +x "$target/7za.exe" && printf "%s" "$target/7za.exe"
-        else
-            p7zr_log error "Fail to download."
-            return 1
-        fi
+    local exe
+    case "$osname-$release" in
+        win* | *microsoft*)
+            exe=7zd.x64.exe        
+        ;;
+        linux*|darwin*)     
+            exe=7zd.${osname}.${arch}  
+        ;;
+        *)
+            p7zd_log error "Unsupported [arch=$arch] [os=$osname]!" >&2; 
+            return 1 
+        ;;
+    esac
+    p7zd_log debug "Downloading: p7zip/main/bin/$exe"
+    if CACHE="$target/$exe" ___x_cmd_curl_gitx static-build "p7zip" main "bin/$exe" "$target/$exe"; then
+        chmod +x "$target/$exe" && printf "%s" "$target/$exe"
     else
-        case "$osname" in
-            linux|darwin)
-                p7zr_log debug "Downloading: https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
-                if  CACHE="$target/7zr" xrc_curl "https://gitee.com/static-build/p7zip/raw/master/bin/7zr.$osname.$arch"
-                then
-                    chmod +x "$target/7zr" && printf "%s" "$target/7zr"
-                else
-                    p7zr_log error "Fail to download."
-                    return 1
-                fi
-            ;;
-            *)  p7zr_log error "Unsupported [arch=$arch] [os=$osname]!" >&2; return 1 ;;
-        esac
+        p7zd_log error "Fail to download: p7zip/main/bin/$exe"
+        return 1
     fi
 }
 
 fi
 
-p7zr(){
-    local path
-    path=$(_p7zr_which)
+p7zd(){
+    local p7z_path
+    p7z_path="$(_7zd_which)"
     eval "
-        p7zr(){
-            $path \${1:+\"\$@\"}
+        p7zd(){
+            $p7z_path \${1:+\"\$@\"}
         }
     "
-    p7zr ${1:+"$@"}
+    p7zd ${1:+"$@"}
 }
